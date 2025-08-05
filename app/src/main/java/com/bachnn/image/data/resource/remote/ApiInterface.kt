@@ -11,7 +11,7 @@ interface ApiInterface {
 
     @GET("v1/curated")
     suspend fun getImages(
-        @Query("per_page") perPage: Int = 45,
+        @Query("per_page") perPage: Int = 20,
         @Query("page") page: Int = 1
     ): PexelsResponse
 

@@ -8,7 +8,7 @@ import javax.inject.Inject
 class RemoteDataSource @Inject constructor(
     private val apiInterface: ApiInterface
 ): AppDataSource.Remote {
-    override suspend fun getImages(): PexelsResponse {
-        return apiInterface.getImages()
+    override suspend fun getImages(page : Int, perPage: Int): PexelsResponse {
+        return apiInterface.getImages(perPage, page)
     }
 }

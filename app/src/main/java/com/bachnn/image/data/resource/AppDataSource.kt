@@ -11,7 +11,7 @@ interface AppDataSource {
 
     interface Remote {
 
-        suspend fun getImages(): PexelsResponse
+        suspend fun getImages(page : Int = 1, perPage: Int = 20): PexelsResponse
 
     }
 

@@ -1,5 +1,6 @@
 package com.bachnn.image.compose.composescreen
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,13 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +31,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -65,7 +72,8 @@ fun HomeScreen(
                     Modifier.padding(top = contentPadding.calculateTopPadding()),
                     (viewModel.imageUiState as ImageUiState.Success).images,
                     scrollBehavior,
-                    onClickImage
+                    onClickImage,
+                    viewModel
                 )
             }
 
@@ -104,30 +112,55 @@ fun HomePagerScreen(
     modifier: Modifier = Modifier,
     images: PexelsResponse,
     scrollBehavior: TopAppBarScrollBehavior,
-    onClickImage: (PexelsPhoto) -> Unit
+    onClickImage: (PexelsPhoto) -> Unit,
+    viewModel: HomeViewModel
 ) {
-//    LazyVerticalGrid(
-//        columns = GridCells.Fixed(2),
-//        modifier.imePadding(),
-//    ) {
-//        items(
-//            items = images.photos
-//        ) {
-//            ItemImage(image = it, onClickImage = onClickImage)
-//        }
-//    }
+    val listState = rememberLazyStaggeredGridState()
+    val isLoading = viewModel.isLoading.collectAsState()
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
         verticalItemSpacing = 4.dp,
+        state = listState,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         content = {
             items(images.photos) { it ->
                 ItemImage(image = it, onClickImage = onClickImage)
             }
+            
+            // Show loading indicator at the bottom when loading more photos
+            if (isLoading.value) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(32.dp),
+                            color = MaterialTheme.colorScheme.secondary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    }
+                }
+            }
         }
     )
+    LaunchedEffect(listState, images.photos) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .collect { visibleItems ->
+                if (visibleItems.isNotEmpty()) {
+                    val lastVisibleItemsIndex = visibleItems.last().index
+                    val totalItemCount = listState.layoutInfo.totalItemsCount
+
+                    if (lastVisibleItemsIndex >= totalItemCount - 6) {
+                        viewModel.loadMorePhotos()
+                    }
+                }
+            }
+    }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)

@@ -12,7 +12,7 @@ class ImageRepository @Inject constructor(
     @ApplicationContext context: Context,
     private val remoteDataSource: RemoteDataSource
 ) {
-    suspend fun getImage(): PexelsResponse {
-        return remoteDataSource.getImages()
+    suspend fun getImage(page : Int = 1, perPage: Int = 20): PexelsResponse {
+        return remoteDataSource.getImages(page, perPage)
     }
 }
