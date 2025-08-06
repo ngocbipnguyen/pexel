@@ -33,14 +33,17 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bachnn.image.R
@@ -49,8 +52,12 @@ import com.bachnn.image.data.models.PexelsPhoto
 import com.bachnn.image.data.models.PexelsResponse
 import com.bachnn.image.viewmodels.HomeViewModel
 import com.bachnn.image.viewmodels.ImageUiState
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.signature.ObjectKey
 
 
 // API = KCkFgOwhsqzLSX9PQTm0JaclX5BXr9gtyPJbiDzjZ0o7NoeV0vsIYeTx
@@ -118,6 +125,8 @@ fun HomePagerScreen(
     val listState = rememberLazyStaggeredGridState()
     val isLoading = viewModel.isLoading.collectAsState()
 
+    val context = LocalContext.current
+    val requestManager = remember { Glide.with(context) }
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
         verticalItemSpacing = 4.dp,
@@ -126,9 +135,13 @@ fun HomePagerScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         content = {
             items(images.photos) { it ->
-                ItemImage(image = it, onClickImage = onClickImage)
+                ItemImageThumbnail(
+                    image = it,
+                    onClickImage = onClickImage,
+                    requestManager = requestManager
+                )
             }
-            
+
             // Show loading indicator at the bottom when loading more photos
             if (isLoading.value) {
                 item {
@@ -160,6 +173,10 @@ fun HomePagerScreen(
                     }
                 }
             }
+
+        images.photos.take(20).forEach { url ->
+            requestManager.load(url).preload()
+        }
     }
 }
 
@@ -175,6 +192,35 @@ fun ItemImage(image: PexelsPhoto, onClickImage: (PexelsPhoto) -> Unit) {
         contentScale = ContentScale.Crop
     )
 }
+
+@Composable
+@OptIn(ExperimentalGlideComposeApi::class)
+fun ItemImageThumbnail(
+    image: PexelsPhoto,
+    onClickImage: (PexelsPhoto) -> Unit,
+    requestManager: RequestManager
+) {
+
+    val signature = ObjectKey(image.id.toString()) // thay bằng giá trị phù hợp
+    GlideImage(
+        model = image.src.medium,
+        contentDescription = "",
+        Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        contentScale = ContentScale.Crop,
+    ) {
+        it
+            .thumbnail(
+                requestManager
+                    .asDrawable()
+                    .load(image.src.small)
+                    .signature(signature)
+            )
+            .signature(signature)
+    }
+}
+
 
 @Composable
 fun HomePagerLoading(

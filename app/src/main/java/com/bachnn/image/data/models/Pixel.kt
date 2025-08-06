@@ -9,7 +9,8 @@ data class PexelsPhoto(
 
 data class PhotoSrc(
     val original: String,
-    val medium: String
+    val medium: String,
+    val small: String
 )
 
 data class PexelsResponse(
