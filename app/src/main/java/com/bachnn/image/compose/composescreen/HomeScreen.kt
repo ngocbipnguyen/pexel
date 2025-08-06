@@ -132,9 +132,12 @@ fun HomePagerScreen(
         verticalItemSpacing = 4.dp,
         state = listState,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        contentPadding = PaddingValues(8.dp),
         content = {
-            items(images.photos) { it ->
+            items(images.photos, key = {it.id}) { it ->
                 ItemImageThumbnail(
                     image = it,
                     onClickImage = onClickImage,
@@ -207,7 +210,7 @@ fun ItemImageThumbnail(
         contentDescription = "",
         Modifier
             .fillMaxWidth()
-            .fillMaxHeight(),
+            .height(270.dp),
         contentScale = ContentScale.Crop,
     ) {
         it
