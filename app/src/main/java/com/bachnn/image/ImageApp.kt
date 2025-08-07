@@ -6,8 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.bachnn.image.compose.Full
 import com.bachnn.image.compose.Home
 import com.bachnn.image.compose.Splash
+import com.bachnn.image.compose.composescreen.FullScreen
 import com.bachnn.image.compose.composescreen.HomeScreen
 import com.bachnn.image.compose.composescreen.SplashScreen
 
@@ -32,9 +35,26 @@ fun ImageNavHost(navController: NavHostController) {
         }
 
         composable<Home> {
-            HomeScreen(onClickImage = {
-
+            HomeScreen(onClickImage = { pexelsPhoto ->
+                navController.navigate(route = Full(
+                    imageId = pexelsPhoto.id.toString(),
+                    originalUrl = pexelsPhoto.src.original,
+                    mediumUrl = pexelsPhoto.src.medium,
+                    smallUrl = pexelsPhoto.src.small,
+                    photographer = pexelsPhoto.photographer
+                ))
             })
+        }
+
+        composable<Full> { backStackEntry ->
+            val full: Full = backStackEntry.toRoute()
+            FullScreen(
+                imageId = full.imageId,
+                originalUrl = full.originalUrl,
+                mediumUrl = full.mediumUrl,
+                smallUrl = full.smallUrl,
+                photographer = full.photographer
+            )
         }
     }
 }

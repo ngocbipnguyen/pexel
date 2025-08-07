@@ -81,6 +81,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+    // zoom
+    implementation(libs.zoomable.compose)
 
 }
 

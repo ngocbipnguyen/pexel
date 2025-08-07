@@ -1,7 +1,11 @@
 package com.bachnn.image.compose.composescreen
 
+import android.app.Activity
+import android.os.Build
 import android.util.Log
+import android.view.WindowInsets
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,6 +51,11 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bachnn.image.R
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.bachnn.image.data.models.Image
 import com.bachnn.image.data.models.PexelsPhoto
 import com.bachnn.image.data.models.PexelsResponse
@@ -67,6 +76,29 @@ fun HomeScreen(
     onClickImage: (PexelsPhoto) -> Unit, viewModel: HomeViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    val context = LocalContext.current
+    val activity = context as? Activity
+    if (activity != null) {
+        val window = activity.window
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        SideEffect {
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            WindowInsetsControllerCompat(window, window.decorView).apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    window.insetsController?.show(WindowInsets.Type.statusBars())
+                } else {
+                    WindowInsetsControllerCompat(window, window.decorView).show(WindowInsetsCompat.Type.statusBars())
+                }
+                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+
+        }
+
+        window.statusBarColor = MaterialTheme.colorScheme.primary.toArgb()
+
+    }
 
     Scaffold(
         topBar = {
@@ -210,7 +242,10 @@ fun ItemImageThumbnail(
         contentDescription = "",
         Modifier
             .fillMaxWidth()
-            .height(270.dp),
+            .height(270.dp)
+            .clickable{
+                onClickImage(image)
+            },
         contentScale = ContentScale.Crop,
     ) {
         it
