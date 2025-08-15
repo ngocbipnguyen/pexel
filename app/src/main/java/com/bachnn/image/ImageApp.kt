@@ -7,9 +7,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.bachnn.image.compose.Collection
 import com.bachnn.image.compose.Full
 import com.bachnn.image.compose.Home
 import com.bachnn.image.compose.Splash
+import com.bachnn.image.compose.composescreen.CollectionScreen
 import com.bachnn.image.compose.composescreen.FullScreen
 import com.bachnn.image.compose.composescreen.HomeScreen
 import com.bachnn.image.compose.composescreen.SplashScreen
@@ -29,9 +31,13 @@ fun ImageNavHost(navController: NavHostController) {
         composable<Splash> {
             SplashScreen(
                 moveScreen = {
-                    navController.navigate(route = Home)
+                    navController.navigate(route = Collection)
                 }
             )
+        }
+
+        composable<Collection> {
+            CollectionScreen(onClickCollection =  {})
         }
 
         composable<Home> {

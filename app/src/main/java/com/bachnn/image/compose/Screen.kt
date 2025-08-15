@@ -10,6 +10,9 @@ object Splash
 object Home
 
 @Serializable
+object Collection
+
+@Serializable
 data class Full(
     val imageId: String,
     val originalUrl: String,
