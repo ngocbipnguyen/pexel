@@ -12,6 +12,9 @@ data class PhotoMediaItem(
     val photographer: String,
     val photographer_url: String,
     val url: String,
+    val width: Int,
+    val height: Int,
+    val avg_color: String,
     val src: PhotoSrc? = null,
     val video_files: List<PhotoVideoFile>? = null
 )

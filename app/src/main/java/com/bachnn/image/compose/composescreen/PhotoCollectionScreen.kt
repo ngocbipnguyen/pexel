@@ -1,6 +1,9 @@
 package com.bachnn.image.compose.composescreen
 
+import android.content.res.Resources
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,8 +36,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,6 +53,7 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.signature.ObjectKey
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,7 +119,7 @@ fun PhotoCollectionPage(
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(1),
-        verticalItemSpacing = 4.dp,
+        verticalItemSpacing = 0.dp,
         state = listState,
         modifier = modifier
             .fillMaxSize()
@@ -141,8 +147,13 @@ fun ItemPhotoCollection(
             .padding(top = 12.dp, bottom = 12.dp)
     ) {
 
-        val signature = ObjectKey(media.id.toString()) // thay bằng giá trị phù hợp
+        val signature = ObjectKey(media.id.toString())
+        val configuration = LocalConfiguration.current
+        val screenWidthDp = configuration.screenWidthDp.dp
+        val widthRateDp: Float = pxToDp(media.width).toFloat() / configuration.screenWidthDp.toFloat()
+        val height = media.height / widthRateDp
 
+        val colorCode = Color(android.graphics.Color.parseColor(media.avg_color))
         Row(
             modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -165,24 +176,35 @@ fun ItemPhotoCollection(
             }
 
         }
-        GlideImage(
-            model = media.src?.original,
-            contentDescription = "",
-            Modifier
-                .fillMaxWidth()
-                .clickable {
-                    mediaOnClick()
-                },
-            contentScale = ContentScale.Fit,
-        ) {
-            it
-                .thumbnail(
-                    requestManager
-                        .asDrawable()
-                        .load(media.src?.small)
-                        .signature(signature)
-                )
-                .signature(signature)
+
+        Box(modifier = Modifier.background(colorCode)) {
+            GlideImage(
+                model = media.src?.original,
+                contentDescription = "",
+                Modifier
+                    .size(screenWidthDp, pxToDp(height.toInt()).dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        mediaOnClick()
+                    },
+                contentScale = ContentScale.Fit,
+            ) {
+                it
+                    .thumbnail(
+                        requestManager
+                            .asDrawable()
+                            .load(media.src?.small)
+                            .signature(signature)
+                            .dontAnimate()
+                            .skipMemoryCache(false)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    )
+                    .signature(signature)
+                    .dontAnimate()
+                    .skipMemoryCache(false)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .onlyRetrieveFromCache(false)
+            }
         }
 
         Row(modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp)) {
@@ -215,6 +237,11 @@ fun ItemPhotoCollection(
         }
 
     }
+}
+
+fun pxToDp(px: Int): Int {
+    val dp = px / Resources.getSystem().displayMetrics.density
+    return dp.toInt()
 }
 
 
