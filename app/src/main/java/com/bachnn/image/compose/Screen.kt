@@ -13,6 +13,12 @@ object Home
 object Collection
 
 @Serializable
+data class PhotoCollection(
+    val id: String,
+    val title: String
+)
+
+@Serializable
 data class Full(
     val imageId: String,
     val originalUrl: String,

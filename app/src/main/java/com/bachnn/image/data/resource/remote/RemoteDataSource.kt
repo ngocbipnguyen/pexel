@@ -4,6 +4,7 @@ import com.bachnn.image.data.models.CollectionMediaResponse
 import com.bachnn.image.data.models.CollectionResponse
 import com.bachnn.image.data.models.Image
 import com.bachnn.image.data.models.PexelsResponse
+import com.bachnn.image.data.models.PhotoCollectionResponse
 import com.bachnn.image.data.resource.AppDataSource
 import javax.inject.Inject
 
@@ -23,5 +24,13 @@ class RemoteDataSource @Inject constructor(
 
     override suspend fun getCollectionById(id: String): CollectionMediaResponse {
         return apiInterface.getCollectionById(id)
+    }
+
+    override suspend fun getPhotoCollectionById(
+        id: String,
+        page: Int,
+        perPage: Int
+    ): PhotoCollectionResponse {
+        return apiInterface.getPhotoCollectionById(id, page = page, perPage =  perPage)
     }
 }

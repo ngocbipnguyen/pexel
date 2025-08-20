@@ -10,10 +10,12 @@ import androidx.navigation.toRoute
 import com.bachnn.image.compose.Collection
 import com.bachnn.image.compose.Full
 import com.bachnn.image.compose.Home
+import com.bachnn.image.compose.PhotoCollection
 import com.bachnn.image.compose.Splash
 import com.bachnn.image.compose.composescreen.CollectionScreen
 import com.bachnn.image.compose.composescreen.FullScreen
 import com.bachnn.image.compose.composescreen.HomeScreen
+import com.bachnn.image.compose.composescreen.PhotoCollectionScreen
 import com.bachnn.image.compose.composescreen.SplashScreen
 
 
@@ -37,7 +39,23 @@ fun ImageNavHost(navController: NavHostController) {
         }
 
         composable<Collection> {
-            CollectionScreen(onClickCollection =  {})
+            CollectionScreen(onClickCollection =  { it ->
+                navController.navigate(route = PhotoCollection(
+                    id = it.id,
+                    title = it.title
+                ))
+            })
+        }
+
+        composable<PhotoCollection> { backStackEntry ->
+            val photoCollection: PhotoCollection = backStackEntry.toRoute()
+            PhotoCollectionScreen(
+                id = photoCollection.id,
+                title = photoCollection.title,
+                mediaOnClick = {
+
+                }
+            )
         }
 
         composable<Home> {
