@@ -291,7 +291,7 @@ fun TopBarPage(
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(text = title) },
+        title = { Text(text = title, style = MaterialTheme.typography.titleLarge)},
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(

@@ -302,7 +302,7 @@ fun ImageTheme(
 
     MaterialTheme(
         colorScheme = replyColorScheme,
-        typography = Typography,
+        typography = typography,
         content = content
     )
 }

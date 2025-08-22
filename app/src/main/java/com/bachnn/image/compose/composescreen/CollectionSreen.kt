@@ -189,12 +189,12 @@ fun CollectionItem(
         }
         Text(
             text = collection.title,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(start = 4.dp)
         )
         Text(
             text = "${collection.media_count} Videos & Photos",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
         )
     }
