@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
@@ -33,7 +35,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -84,6 +88,7 @@ fun PhotoCollectionScreen(
                     modifier = Modifier.padding(top = contentPadding.calculateTopPadding()),
                     (viewModel.photoCollectionUiState as PhotoCollectionUiState.Success).collection,
                     scrollBehavior,
+                    viewModel,
                     mediaOnClick
                 )
             }
@@ -109,6 +114,7 @@ fun PhotoCollectionPage(
     modifier: Modifier = Modifier,
     collection: PhotoCollectionResponse,
     scrollBehavior: TopAppBarScrollBehavior,
+    viewModel: PhotoCollectionViewModel,
     mediaOnClick: () -> Unit
 ) {
 
@@ -125,12 +131,28 @@ fun PhotoCollectionPage(
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         content = {
-            items(collection.media, key = {it.id}) { it ->
+            items(collection.media, key = { it.id }) { it ->
                 ItemPhotoCollection(it, mediaOnClick, requestManager)
             }
         }
     )
 
+    LaunchedEffect(listState, collection.media) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .collect { visibleItem ->
+                if (visibleItem.isNotEmpty()) {
+                    val lastVisibilityIndex = visibleItem.last().index
+                    val totalItemCount = listState.layoutInfo.totalItemsCount
+
+                    if (lastVisibilityIndex >= totalItemCount - 2) {
+                        viewModel.loadMore()
+                    }
+                }
+            }
+        collection.media.take(20).forEach { url ->
+            requestManager.load(url).preload()
+        }
+    }
 
 }
 
@@ -144,23 +166,32 @@ fun ItemPhotoCollection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 12.dp, bottom = 12.dp)
+            .padding(top = 12.dp, bottom = 20.dp)
     ) {
 
         val signature = ObjectKey(media.id.toString())
         val configuration = LocalConfiguration.current
         val screenWidthDp = configuration.screenWidthDp.dp
-        val widthRateDp: Float = pxToDp(media.width).toFloat() / configuration.screenWidthDp.toFloat()
+        val widthRateDp: Float =
+            pxToDp(media.width).toFloat() / configuration.screenWidthDp.toFloat()
         val height = media.height / widthRateDp
 
         val colorCode = Color(android.graphics.Color.parseColor(media.avg_color))
         Row(
-            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 8.dp),
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircleNetworkImage(modifier = Modifier.size(46.dp), media.src?.small!!)
+            CircleNetworkImage(
+                modifier = Modifier
+                    .size(46.dp),
+                media.src?.small!!
+            )
 
-            Text(text = media.photographer, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = media.photographer,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(start = 12.dp)
+            )
 
             Spacer(
                 modifier = Modifier
@@ -207,18 +238,23 @@ fun ItemPhotoCollection(
             }
         }
 
-        Row(modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp)) {
+        Row(
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             IconButton(onClick = {}) {
                 Icon(
                     imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = "favorite"
+                    contentDescription = "favorite",
+                    modifier = Modifier.size(32.dp)
                 )
             }
 
             IconButton(onClick = {}) {
                 Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "favorite"
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "favorite",
+                    modifier = Modifier.size(32.dp)
                 )
             }
 
