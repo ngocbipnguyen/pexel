@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -201,9 +203,15 @@ fun ItemPhotoCollection(
 
             OutlinedButton(
                 onClick = {},
-                shape = RoundedCornerShape(4.dp)
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
             ) {
-                Text(text = "Follow")
+                Text(
+                    text = "Follow",
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
 
         }
@@ -266,9 +274,16 @@ fun ItemPhotoCollection(
 
             Button(
                 onClick = {},
-                shape = RoundedCornerShape(4.dp)
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.onSurface
+                )
             ) {
-                Text(text = "Download")
+                Text(
+                    text = "Download",
+                    color = MaterialTheme.colorScheme.surface,
+                    style = MaterialTheme.typography.titleLarge
+                )
             }
         }
 
@@ -291,7 +306,7 @@ fun TopBarPage(
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(text = title, style = MaterialTheme.typography.titleLarge)},
+        title = { Text(text = title, style = MaterialTheme.typography.titleLarge) },
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(

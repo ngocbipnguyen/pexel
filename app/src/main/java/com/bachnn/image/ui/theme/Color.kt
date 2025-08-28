@@ -2,10 +2,10 @@ package com.bachnn.image.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val primaryLight = Color(0xFF006874)
+val primaryLight = Color(0xFFF6F6F6)
 val onPrimaryLight = Color(0xFFFFFFFF)
-val primaryContainerLight = Color(0xFF9EEFFD)
-val onPrimaryContainerLight = Color(0xFF004F58)
+val primaryContainerLight = Color(0xFFFDFDFD)
+val onPrimaryContainerLight = Color(0xFF0A0A0A)
 val secondaryLight = Color(0xFF4A6267)
 val onSecondaryLight = Color(0xFFFFFFFF)
 val secondaryContainerLight = Color(0xFFCDE7EC)
@@ -110,10 +110,10 @@ val surfaceContainerLightHighContrast = Color(0xFFDEE3E5)
 val surfaceContainerHighLightHighContrast = Color(0xFFCFD5D6)
 val surfaceContainerHighestLightHighContrast = Color(0xFFC2C7C9)
 
-val primaryDark = Color(0xFF7BFFFF)
-val onPrimaryDark = Color(0xFF00363D)
-val primaryContainerDark = Color(0xFF004F58)
-val onPrimaryContainerDark = Color(0xFF9EEFFD)
+val primaryDark = Color(0xFF181818)
+val onPrimaryDark = Color(0xFF000000)
+val primaryContainerDark = Color(0xFF000000)
+val onPrimaryContainerDark = Color(0xFFF8F8F8)
 val secondaryDark = Color(0xFFB1CBD0)
 val onSecondaryDark = Color(0xFF1C3438)
 val secondaryContainerDark = Color(0xFF334B4F)
@@ -145,6 +145,8 @@ val surfaceContainerLowDark = Color(0xFF171D1E)
 val surfaceContainerDark = Color(0xFF1B2122)
 val surfaceContainerHighDark = Color(0xFF252B2C)
 val surfaceContainerHighestDark = Color(0xFF303637)
+
+
 
 val primaryDarkMediumContrast = Color(0xFF98E9F7)
 val onPrimaryDarkMediumContrast = Color(0xFF002A30)
